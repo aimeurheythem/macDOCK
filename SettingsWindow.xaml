@@ -1,0 +1,132 @@
+<Window x:Class="MacDock.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="clr-namespace:MacDock"
+        Title="MacDock Settings"
+        Width="460" SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF1E1E1E" Foreground="#FFEDEDED"
+        FontFamily="{x:Static md:MacFonts.Text}" FontSize="13">
+
+    <Window.Resources>
+        <Style x:Key="Section" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,14,0,8"/>
+        </Style>
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Value" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Foreground" Value="#FFAAAAAA"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#FFEDEDED"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+        <Style TargetType="Slider">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="IsSnapToTickEnabled" Value="True"/>
+            <Setter Property="Margin" Value="8,0"/>
+        </Style>
+        <Style x:Key="Swatch" TargetType="Button">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="12"
+                                BorderBrush="#80FFFFFF" BorderThickness="1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="22,8,22,20">
+
+        <!-- Size -->
+        <TextBlock Text="Size" Style="{StaticResource Section}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="32"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Icon size" Style="{StaticResource Label}"/>
+            <Slider x:Name="IconSizeSlider" Grid.Column="1" Minimum="32" Maximum="96" TickFrequency="2"/>
+            <TextBlock x:Name="IconSizeText" Grid.Column="2" Style="{StaticResource Value}"/>
+
+            <TextBlock Grid.Row="1" Text="Magnification" Style="{StaticResource Label}"/>
+            <Slider x:Name="MagnifySlider" Grid.Row="1" Grid.Column="1" Minimum="32" Maximum="160" TickFrequency="2"/>
+            <TextBlock x:Name="MagnifyText" Grid.Row="1" Grid.Column="2" Style="{StaticResource Value}"/>
+        </Grid>
+
+        <!-- Appearance -->
+        <TextBlock Text="Appearance" Style="{StaticResource Section}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"/>
+                <RowDefinition Height="32"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Dock color" Style="{StaticResource Label}"/>
+            <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8,0,0,0"
+                        VerticalAlignment="Center">
+                <StackPanel x:Name="SwatchPanel" Orientation="Horizontal"/>
+                <TextBox x:Name="ColorBox" Width="78" Margin="4,0,0,0" VerticalContentAlignment="Center"
+                         Background="#FF2B2B2B" Foreground="#FFEDEDED" BorderBrush="#FF555555"
+                         CaretBrush="White" Padding="4,2"/>
+            </StackPanel>
+
+            <TextBlock Grid.Row="1" Text="Dock opacity" Style="{StaticResource Label}"/>
+            <Slider x:Name="OpacitySlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="5"/>
+            <TextBlock x:Name="OpacityText" Grid.Row="1" Grid.Column="2" Style="{StaticResource Value}"/>
+        </Grid>
+
+        <!-- Behavior -->
+        <TextBlock Text="Behavior" Style="{StaticResource Section}"/>
+        <CheckBox x:Name="AutoHideCheck" Content="Automatically hide and show the dock"/>
+        <CheckBox x:Name="GenieCheck" Content="Genie effect when minimizing windows"/>
+        <TextBlock x:Name="WindhawkWarning" Visibility="Collapsed" Margin="22,0,0,6" TextWrapping="Wrap"
+                   FontSize="12" Foreground="#FFFFB340"
+                   Text="Windhawk's &quot;MacOS Minimize Animation&quot; mod is active, so every minimize plays twice. Disable that mod in Windhawk to keep only MacDock's effect."/>
+        <CheckBox x:Name="HideTaskbarCheck" Content="Hide the Windows taskbar"/>
+        <CheckBox x:Name="MenuBarCheck" Content="Show the menu bar at the top of the screen"/>
+        <CheckBox x:Name="StartButtonCheck" Content="Show Finder in the dock"/>
+        <CheckBox x:Name="WinKeyCheck" Content="Windows key opens Spotlight search"/>
+        <CheckBox x:Name="TrashCheck" Content="Show the Trash in the dock"/>
+        <CheckBox x:Name="WindowButtonsCheck" Content="Mac window buttons (red, yellow, green) on every app"/>
+        <CheckBox x:Name="FolderIconsCheck" Content="Blue macOS folders everywhere in Windows (asks for permission)"/>
+        <CheckBox x:Name="FinderFoldersCheck" Content="Open folders in Finder instead of File Explorer"/>
+        <CheckBox x:Name="CursorsCheck" Content="macOS mouse pointers"/>
+        <CheckBox x:Name="StartupCheck" Content="Start MacDock with Windows"/>
+
+        <TextBlock Margin="0,12,0,0" Foreground="#FF8A8A8A" TextWrapping="Wrap" FontSize="12"
+                   Text="Panic key: Ctrl+Alt+Shift+T restores the taskbar and closes the dock."/>
+
+        <DockPanel Margin="0,18,0,0" LastChildFill="False">
+            <Button x:Name="OpenConfigButton" DockPanel.Dock="Left" Content="Open config.json"
+                    Padding="12,5" Background="#FF2B2B2B" Foreground="#FFEDEDED" BorderBrush="#FF555555"/>
+            <Button x:Name="OpenIconsButton" DockPanel.Dock="Left" Content="Custom icons…" Margin="8,0,0,0"
+                    Padding="12,5" Background="#FF2B2B2B" Foreground="#FFEDEDED" BorderBrush="#FF555555"/>
+            <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="Done" IsDefault="True" IsCancel="True"
+                    Padding="22,5" Background="#FF2F6FDB" Foreground="White" BorderBrush="#FF2F6FDB"/>
+        </DockPanel>
+    </StackPanel>
+</Window>

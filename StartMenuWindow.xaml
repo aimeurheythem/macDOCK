@@ -1,0 +1,352 @@
+<Window x:Class="MacDock.StartMenuWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="clr-namespace:MacDock"
+        Title="Start"
+        Width="704" Height="620"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize"
+        FontFamily="{x:Static md:MacFonts.Text}" FontSize="13"
+        Foreground="#FF1D1D1F"
+        UseLayoutRounding="True">
+
+    <Window.Resources>
+        <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+
+        <!-- Apple light palette -->
+        <SolidColorBrush x:Key="Label" Color="#FF1D1D1F"/>
+        <SolidColorBrush x:Key="SecondaryLabel" Color="#FF86868B"/>
+        <!-- "White stone": warm off-white instead of pure white -->
+        <SolidColorBrush x:Key="Fill" Color="#D9E6E2DA"/>
+        <SolidColorBrush x:Key="FillHover" Color="#E6DEDAD1"/>
+        <SolidColorBrush x:Key="Hairline" Color="#FFE1DCD3"/>
+        <SolidColorBrush x:Key="Blue" Color="#FF007AFF"/>
+
+        <!-- Slim scrollbar -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="MinWidth" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border x:Name="T" Width="5" CornerRadius="2.5" Margin="0,4"
+                                                        Background="#FFC7C7CC" HorizontalAlignment="Center"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="T" Property="Width" Value="7"/>
+                                                        <Setter TargetName="T" Property="Background" Value="#FFAEAEB2"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="PlainList" TargetType="ListBox">
+            <ScrollViewer Focusable="False" CanContentScroll="False">
+                <ItemsPresenter/>
+            </ScrollViewer>
+        </ControlTemplate>
+
+        <!-- Text link -->
+        <Style x:Key="Link" TargetType="Button">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{StaticResource Blue}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="8,4">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource Fill}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Grid tile -->
+        <Style x:Key="Tile" TargetType="ListBoxItem">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="ToolTip" Value="{Binding Name}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" CornerRadius="12" Background="Transparent" Margin="2" Padding="4,12,4,10">
+                            <StackPanel>
+                                <Image Source="{Binding Icon}" Width="48" Height="48"/>
+                                <TextBlock Text="{Binding Name}" Margin="0,8,0,0" FontSize="12"
+                                           TextAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           HorizontalAlignment="Center" MaxWidth="86"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource Fill}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1F007AFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- List row (All Apps, search). Selected = Apple blue + white text. -->
+        <DataTemplate x:Key="RowTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding SmallIcon}" Width="26" Height="26"/>
+                <TextBlock Text="{Binding Name}" Margin="12,0,0,0" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TopHitTemplate">
+            <Grid Margin="0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding Icon}" Width="48" Height="48"/>
+                <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="Application" FontSize="12" Opacity="0.65" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="Row" TargetType="ListBoxItem">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{StaticResource Label}"/>
+            <Setter Property="ContentTemplate" Value="{StaticResource RowTemplate}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" CornerRadius="8" Background="Transparent" Padding="10,6" Margin="0,1">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource Fill}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource Blue}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=(ItemsControl.AlternationIndex)}" Value="0"/>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=Tag}" Value="search"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="ContentTemplate" Value="{StaticResource TopHitTemplate}"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Round footer button -->
+        <Style x:Key="RoundButton" TargetType="Button">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{StaticResource Label}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" CornerRadius="18" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource FillHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- Margin = room for the soft shadow (transparent, click-through) -->
+    <Grid x:Name="Frame" Margin="32,24,32,24">
+
+        <!-- Soft shadow, clipped (in code) to OUTSIDE the panel so the translucent panel stays clean -->
+        <Grid x:Name="ShadowHost" IsHitTestVisible="False">
+            <Border CornerRadius="16" Background="White">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="36" ShadowDepth="8" Direction="270" Opacity="0.16"
+                                      Color="Black" RenderingBias="Quality"/>
+                </Border.Effect>
+            </Border>
+        </Grid>
+
+        <!-- Slightly translucent over a light blur. ClearTypeHint re-enables sharp ClearType text,
+             which WPF otherwise turns off on transparent windows (the "480p" look). -->
+        <Border x:Name="Panel" CornerRadius="16" Background="#F0F4F1EB" BorderBrush="#FFD8D2C8" BorderThickness="1"
+                RenderOptions.ClearTypeHint="Enabled"
+                TextOptions.TextFormattingMode="Ideal"
+                TextOptions.TextRenderingMode="ClearType">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Margin="24,24,24,8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Search -->
+                    <Border Height="40" CornerRadius="10" Background="{StaticResource Fill}">
+                        <Grid Margin="14,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE721;" FontFamily="{StaticResource IconFont}" FontSize="14"
+                                       Foreground="{StaticResource SecondaryLabel}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="SearchPlaceholder" Grid.Column="1" Margin="11,0,0,0" FontSize="14"
+                                       Text="Search" Foreground="{StaticResource SecondaryLabel}"
+                                       VerticalAlignment="Center" IsHitTestVisible="False"/>
+                            <TextBox x:Name="SearchBox" Grid.Column="1" Margin="9,0,0,0" FontSize="14"
+                                     Background="Transparent" BorderThickness="0" VerticalAlignment="Center"
+                                     Foreground="{StaticResource Label}" CaretBrush="{StaticResource Blue}"/>
+                        </Grid>
+                    </Border>
+
+                    <Grid Grid.Row="1" Margin="0,22,0,0">
+
+                        <!-- Pinned -->
+                        <Grid x:Name="HomeView">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Style="{StaticResource Link}" Click="AllApps_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="All Apps"/>
+                                        <TextBlock Text="&#xE76C;" FontFamily="{StaticResource IconFont}" FontSize="9"
+                                                   Margin="6,1,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock Text="Pinned" FontSize="14" FontWeight="SemiBold"
+                                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                            </DockPanel>
+                            <ListBox x:Name="PinnedGrid" Grid.Row="1" Margin="-4,10,-4,0" Template="{StaticResource PlainList}"
+                                     Background="Transparent" BorderThickness="0" Focusable="False"
+                                     ItemContainerStyle="{StaticResource Tile}"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="6" VerticalAlignment="Top"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                        </Grid>
+
+                        <!-- All Apps / results -->
+                        <Grid x:Name="AppsView" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <DockPanel>
+                                <Button x:Name="BackLink" DockPanel.Dock="Right" Style="{StaticResource Link}" Click="Back_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE76B;" FontFamily="{StaticResource IconFont}" FontSize="9"
+                                                   Margin="0,1,6,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Back"/>
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock x:Name="ListTitle" Text="All Apps" FontSize="14" FontWeight="SemiBold"
+                                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                            </DockPanel>
+                            <ListBox x:Name="AppList" Grid.Row="1" Margin="0,10,0,0" Template="{StaticResource PlainList}"
+                                     Background="Transparent" BorderThickness="0" Focusable="False"
+                                     ItemContainerStyle="{StaticResource Row}" AlternationCount="100000"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <ListBox.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="#FF86868B" Margin="10,12,0,4"/>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ListBox.GroupStyle>
+                            </ListBox>
+                        </Grid>
+
+                        <TextBlock x:Name="EmptyText" Visibility="Collapsed" FontSize="14"
+                                   Foreground="{StaticResource SecondaryLabel}" TextAlignment="Center" TextWrapping="Wrap"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="360"/>
+                    </Grid>
+                </Grid>
+
+                <!-- Footer -->
+                <Border Grid.Row="1" Height="64" Background="#B3EBE7DF" CornerRadius="0,0,15,15"
+                        BorderBrush="{StaticResource Hairline}" BorderThickness="0,1,0,0" Padding="28,0,22,0">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Grid Width="32" Height="32">
+                                <Ellipse Fill="{StaticResource Blue}"/>
+                                <TextBlock x:Name="UserInitial" Foreground="White" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Ellipse x:Name="UserPicture" Visibility="Collapsed"/>
+                            </Grid>
+                            <TextBlock x:Name="UserNameText" Margin="11,0,0,0" FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Button Style="{StaticResource RoundButton}" Content="&#xE713;" ToolTip="Settings"
+                                    Click="Settings_Click"/>
+                            <Button x:Name="PowerButton" Style="{StaticResource RoundButton}" Content="&#xE7E8;"
+                                    ToolTip="Power" Click="Power_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

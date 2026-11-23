@@ -1,0 +1,17 @@
+﻿<Window x:Class="MacDock.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MacDock.Controls"
+        Title="MacDock"
+        Width="800" Height="160"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent" Topmost="True"
+        ShowInTaskbar="False" ShowActivated="False"
+        ResizeMode="NoResize">
+
+    <!--
+        The window is wider/taller than the dock so icons can magnify upward.
+        Fully transparent areas are click-through. The blur comes from BackdropWindow.
+    -->
+    <controls:MagnifyingDock x:Name="Dock"/>
+</Window>
